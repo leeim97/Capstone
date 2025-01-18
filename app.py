@@ -241,51 +241,63 @@ def upload_file():
         #         if comment[i][j]:
         #             print(comment[i][j])
         
+        import pymysql
+        from datetime import datetime
+
+        # 현재 날짜와 시간
+        now = datetime.now()
+        mysql_datetime = now.strftime('%Y-%m-%d %H:%M:%S')
+
         # 데이터베이스에서 이전 코멘트 불러오기
         xcomment=list()
-        SQL=f"""SELECT id FROM golf_data WHERE id={user_id};"""
+        
+        # 데이터베이스에 아이디 점수 시간 넣기
+        SQL = f"""INSERT INTO SCORE (ID, total, DATEONE) VALUES ({user_id},{total},'{mysql_datetime}');"""
+        # SQL=f"""SELECT id FROM golf_data WHERE id={user_id};"""
         print(SQL)
         cursor.execute(SQL)
-        x=cursor.fetchone()
+        # x = cursor.fetchone()
         
-        # 기존 데이터 있으면 새로 갱신
-        if x:
-            print("아이디 존재,갱신")
-            SQL=f"""
-            INSERT INTO id{user_id} (total) VALUES({total});"""
-            print(SQL)
-            cursor.execute(SQL)
-            db.commit()
+        # # 기존 데이터 있으면 새로 갱신
+        # if x:
+        #     print("아이디 존재,갱신")
+        #     SQL=f"""
+        #     INSERT INTO id{user_id} (total) VALUES({total});"""
+        #     print(SQL)
+        #     cursor.execute(SQL)
+        #     db.commit()
             
             
             
-        #없으면 새로 추가
-        else:
-            print(f"유저 아이디 {user_id} 없음")
-            SQL=f"""CREATE TABLE id{user_id}(
-              cnt int AUTO_INCREMENT PRIMARY KEY,
-              total int
-            );"""
-            print(SQL)
-            cursor.execute(SQL)
-            SQL=f"""INSERT INTO id{user_id}(total) VALUES({total});"""
-            print(SQL)
-            cursor.execute(SQL)
-            SQL=f"""INSERT INTO golf_data(id) VALUES({user_id});"""
-            print(SQL)
-            cursor.execute(SQL)
-            db.commit()
+        # #없으면 새로 추가
+        # else:
+        #     print(f"유저 아이디 {user_id} 없음")
+        #     SQL=f"""CREATE TABLE id{user_id}(
+        #       cnt int AUTO_INCREMENT PRIMARY KEY,
+        #       total int
+        #     );"""
+        #     print(SQL)
+        #     cursor.execute(SQL)
+        #     SQL=f"""INSERT INTO id{user_id}(total) VALUES({total});"""
+        #     print(SQL)
+        #     cursor.execute(SQL)
+        #     SQL=f"""INSERT INTO golf_data(id) VALUES({user_id});"""
+        #     print(SQL)
+        #     cursor.execute(SQL)
+        #     db.commit()
            
         
   
-        SQL=f"""SELECT * FROM id{user_id} ORDER BY cnt DESC;"""
+        SQL=f"""SELECT total FROM SCORE WHERE ID = {user_id} ORDER BY DATEONE;"""
+        # SQL = f"""SELECT total FROM GOLF {user_id} ORDER BY DATEONE;"""
         cursor.execute(SQL)
         y=cursor.fetchmany(5)
         db.commit()
         db.close()
         
        
-        
+        print(y)
+
         if y:
            ly=list(y)
            print(ly[0])
@@ -293,7 +305,7 @@ def upload_file():
            for i in range(len(ly)):
                
                 print(ly[i][0])
-                xtotal[len(ly)-i-1]=ly[i][1]
+                xtotal[len(ly)-i-1]=ly[i][0]
                 tryn[len(ly)-i-1]=ly[i][0]
            print(xtotal)
            print(tryn)  
